@@ -11,6 +11,9 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import java.util.Random;
 
 /**
  * Created by alam on 14/12/17.
@@ -18,30 +21,89 @@ import android.widget.ProgressBar;
 
 public class PacedVisualFragment extends Fragment {
     View v;
-    ProgressBar progressBar;
+    ProgressBar progressBar,randomNumberProgress;
+    TextView timerView,label,randomNumberDisplay,randomNumberLabel;
+    int timerCount = 5;
+    int gameLevel = 0;
+    int firstNumber,secondNumber,sum = 0;
+    boolean isFirstTimerFinished = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_paced_visual, container, false);
         progressBar  = (ProgressBar) v.findViewById(R.id.progress_bar);
+        randomNumberProgress = (ProgressBar) v.findViewById(R.id.random_number_progress);
+        randomNumberLabel = (TextView) v.findViewById(R.id.random_number_label);
+        randomNumberDisplay = (TextView) v.findViewById(R.id.random_number);
+        timerView = (TextView) v.findViewById(R.id.timer_view);
+        label = (TextView) v.findViewById(R.id.label);
         progressBar.getProgressDrawable().setColorFilter(
+                getResources().getColor(R.color.buttonColor), android.graphics.PorterDuff.Mode.SRC_IN);
+        randomNumberProgress.getProgressDrawable().setColorFilter(
                 getResources().getColor(R.color.buttonColor), android.graphics.PorterDuff.Mode.SRC_IN);
         new CountDownTimer(5000, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getProgress(), 700);
-                progressAnimator.setDuration(5000);
-                progressAnimator.setInterpolator(new LinearInterpolator());
-                progressAnimator.start();
+                timerView.setText(String.valueOf(timerCount));
+                startAnimator(progressBar,5000);
+                timerCount--;
             }
 
             @Override
             public void onFinish() {
+                timerView.setText("0");
+                progressBar.setVisibility(View.GONE);
+                timerView.setVisibility(View.GONE);
+                label.setVisibility(View.GONE);
+                randomNumberProgress.setVisibility(View.VISIBLE);
+                randomNumberDisplay.setVisibility(View.VISIBLE);
+                randomNumberLabel.setVisibility(View.VISIBLE);
+                firstNumber = randInt(0, 8);
+                randomNumberDisplay.setText(String.valueOf(firstNumber));
+                generateRandomNumber();
+
 
             }
 
-        }.start();
+            }.start();
+
+
+
         return v;
+    }
+    public void generateRandomNumber(){
+
+        new CountDownTimer(15000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                startAnimator(randomNumberProgress,15000);
+                if(millisUntilFinished/300 == 0){
+
+                }
+
+            }
+
+            public void onFinish() {
+                secondNumber = randInt(0, 8);
+                randomNumberDisplay.setText(String.valueOf(secondNumber));
+                sum  = firstNumber + secondNumber;
+                firstNumber = secondNumber;
+            }
+        }.start();
+    }
+    public void startAnimator(ProgressBar progressBar,int duration){
+        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getProgress(), 700);
+        progressAnimator.setDuration(duration);
+        progressAnimator.setInterpolator(new LinearInterpolator());
+        progressAnimator.start();
+    }
+    public static int randInt(int min, int max) {
+
+        Random rand = new Random();
+
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
     }
 
 }
