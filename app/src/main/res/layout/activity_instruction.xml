@@ -25,6 +25,6 @@
         android:text="Next"
         android:textColor="@color/colorPrimary"
         android:background="@drawable/button_selector"
-        android:id="@+id/hideStartPage"
+        android:id="@+id/next"
         />
 </LinearLayout>
