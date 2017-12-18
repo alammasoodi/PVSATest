@@ -11,8 +11,11 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -20,7 +23,7 @@ import java.util.Random;
  * Created by alam on 14/12/17.
  */
 
-public class PacedVisualFragment extends Fragment {
+public class PacedVisualFragment extends Fragment implements View.OnClickListener {
     View v;
     ProgressBar progressBar,randomNumberProgress;
     TextView timerView,label,randomNumberDisplay,randomNumberLabel;
@@ -28,6 +31,8 @@ public class PacedVisualFragment extends Fragment {
     int gameLevel = 0;
     int firstNumber,secondNumber,sum = 0;
     int numberCount = 0;
+    Button[] buttons;
+    LinearLayout resultLayout;
     boolean isFirstTimerFinished = false;
     final Handler handler = new Handler();
 
@@ -35,11 +40,23 @@ public class PacedVisualFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_paced_visual, container, false);
         progressBar  = (ProgressBar) v.findViewById(R.id.progress_bar);
+        resultLayout = (LinearLayout) v.findViewById(R.id.result_layout);
         randomNumberProgress = (ProgressBar) v.findViewById(R.id.random_number_progress);
         randomNumberLabel = (TextView) v.findViewById(R.id.random_number_label);
         randomNumberDisplay = (TextView) v.findViewById(R.id.random_number);
         timerView = (TextView) v.findViewById(R.id.timer_view);
         label = (TextView) v.findViewById(R.id.label);
+        buttons = new Button[15];
+
+        for(int i=0; i<buttons.length; i++) {
+            {
+                String buttonID = "button" + (i+1);
+
+                int resID = getResources().getIdentifier(buttonID, "id", getActivity().getPackageName());
+                buttons[i] = ((Button)v. findViewById(resID));
+                buttons[i].setOnClickListener(this);
+            }
+        }
         progressBar.getProgressDrawable().setColorFilter(
                 getResources().getColor(R.color.buttonColor), android.graphics.PorterDuff.Mode.SRC_IN);
         randomNumberProgress.getProgressDrawable().setColorFilter(
@@ -78,12 +95,16 @@ public class PacedVisualFragment extends Fragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-               secondNumber = randInt(0, 8);
+                resultLayout.setVisibility(View.VISIBLE);
+                secondNumber = randInt(0, 8);
+                sum  = firstNumber + secondNumber;
+                firstNumber = secondNumber;
                 randomNumberDisplay.setText(String.valueOf(secondNumber));
                 if(numberCount < 5) {
                     handler.postDelayed(this, 3000);
                 }
                 numberCount++;
+
             }
         };
         handler.postDelayed(runnable, 3000);
@@ -97,8 +118,7 @@ public class PacedVisualFragment extends Fragment {
             }
 
             public void onFinish() {
-                sum  = firstNumber + secondNumber;
-                firstNumber = secondNumber;
+
             }
         }.start();
     }
@@ -115,6 +135,30 @@ public class PacedVisualFragment extends Fragment {
         int randomNum = rand.nextInt((max - min) + 1) + min;
 
         return randomNum;
+    }
+
+    @Override
+    public void onClick(View view) {
+        int index = 0;
+        for (int i = 0; i < buttons.length; i++)
+        {
+            if (buttons[i].getId() == view.getId())
+            {
+                index = i;
+                break;
+            }
+
+        }
+
+        if(buttons[index].getText().equals(String.valueOf(sum)))
+            Toast.makeText(getActivity(), "correct " ,Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(getActivity(), "incorrect " ,Toast.LENGTH_SHORT).show();
+        resultLayout.setVisibility(View.GONE);
+
+
+
+
     }
 
 }
