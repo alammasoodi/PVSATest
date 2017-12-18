@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -30,6 +32,8 @@ public class PacedVisualFragment extends Fragment {
     int numberCount = 0;
     boolean isFirstTimerFinished = false;
     final Handler handler = new Handler();
+    private TextToSpeech mTextToSpeech;
+    private Boolean isText= false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,6 +44,7 @@ public class PacedVisualFragment extends Fragment {
         randomNumberDisplay = (TextView) v.findViewById(R.id.random_number);
         timerView = (TextView) v.findViewById(R.id.timer_view);
         label = (TextView) v.findViewById(R.id.label);
+       // instantiateTextToSpeech();
         progressBar.getProgressDrawable().setColorFilter(
                 getResources().getColor(R.color.buttonColor), android.graphics.PorterDuff.Mode.SRC_IN);
         randomNumberProgress.getProgressDrawable().setColorFilter(
@@ -62,7 +67,15 @@ public class PacedVisualFragment extends Fragment {
                 randomNumberDisplay.setVisibility(View.VISIBLE);
                 randomNumberLabel.setVisibility(View.VISIBLE);
                 firstNumber = randInt(0, 8);
-                randomNumberDisplay.setText(String.valueOf(firstNumber));
+                if(isText){
+                    randomNumberDisplay.setText(String.valueOf(firstNumber));
+
+                }else {
+                    instantiateTextToSpeech();
+                    mTextToSpeech.speak(String.valueOf(firstNumber), TextToSpeech.QUEUE_FLUSH, null);
+
+                }
+
                 startNumberProgress();
                 generateRandomNumber();
 
@@ -75,11 +88,19 @@ public class PacedVisualFragment extends Fragment {
         return v;
     }
     public void generateRandomNumber(){
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                secondNumber = randInt(0, 8);
-                randomNumberDisplay.setText(String.valueOf(secondNumber));
+                if(isText){
+                    randomNumberDisplay.setText(String.valueOf(secondNumber));
+
+                }else {
+                    mTextToSpeech.speak(String.valueOf(secondNumber), TextToSpeech.QUEUE_FLUSH, null);
+
+                }
+
                 if(numberCount < 5) {
                     handler.postDelayed(this, 3000);
                 }
@@ -116,5 +137,16 @@ public class PacedVisualFragment extends Fragment {
 
         return randomNum;
     }
+    private void  instantiateTextToSpeech(){
+       mTextToSpeech =new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != android.speech.tts.TextToSpeech.ERROR) {
+                  mTextToSpeech.setLanguage(Locale.UK);
+                }
+            }
+        });
+    }
+
 
 }

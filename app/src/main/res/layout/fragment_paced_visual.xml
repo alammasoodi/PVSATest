@@ -59,7 +59,7 @@
         android:id="@+id/random_number"
         android:gravity="center"
 
-        android:text="2"
+        android:text=""
         android:visibility="gone"
         android:textSize="30dp"
         android:textColor="#000"
