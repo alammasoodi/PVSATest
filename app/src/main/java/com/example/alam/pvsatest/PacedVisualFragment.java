@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,9 @@ public class PacedVisualFragment extends Fragment {
     int timerCount = 5;
     int gameLevel = 0;
     int firstNumber,secondNumber,sum = 0;
+    int numberCount = 0;
     boolean isFirstTimerFinished = false;
+    final Handler handler = new Handler();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,8 +63,8 @@ public class PacedVisualFragment extends Fragment {
                 randomNumberLabel.setVisibility(View.VISIBLE);
                 firstNumber = randInt(0, 8);
                 randomNumberDisplay.setText(String.valueOf(firstNumber));
+                startNumberProgress();
                 generateRandomNumber();
-
 
             }
 
@@ -72,20 +75,28 @@ public class PacedVisualFragment extends Fragment {
         return v;
     }
     public void generateRandomNumber(){
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+               secondNumber = randInt(0, 8);
+                randomNumberDisplay.setText(String.valueOf(secondNumber));
+                if(numberCount < 5) {
+                    handler.postDelayed(this, 3000);
+                }
+                numberCount++;
+            }
+        };
+        handler.postDelayed(runnable, 3000);
+    }
+    public void startNumberProgress(){
 
         new CountDownTimer(15000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 startAnimator(randomNumberProgress,15000);
-                if(millisUntilFinished/300 == 0){
-
-                }
-
             }
 
             public void onFinish() {
-                secondNumber = randInt(0, 8);
-                randomNumberDisplay.setText(String.valueOf(secondNumber));
                 sum  = firstNumber + secondNumber;
                 firstNumber = secondNumber;
             }
