@@ -2,6 +2,8 @@ package com.example.alam.pvsatest;
 
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -53,8 +55,8 @@ public class PacedVisualFragment extends Fragment implements View.OnClickListene
         label = (TextView) v.findViewById(R.id.label);
         buttons = new Button[15];
         instantiateTextToSpeech();
-
-        for(int i=0; i<buttons.length; i++) {
+        getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
+          for(int i=0; i<buttons.length; i++) {
             {
                 String buttonID = "button" + (i+1);
 
@@ -164,6 +166,7 @@ public class PacedVisualFragment extends Fragment implements View.OnClickListene
                 }
             }
         });
+
     }
 
 
